@@ -26,7 +26,7 @@
 						<!--세션 아이디와 사이트아이디 같을때-->
 						<li role="presentation"><a href="${pageContext.request.contextPath}/analyze">통계</a></li>
 					</ul>
-				</c:when>				
+				</c:when>
 				<c:otherwise>
 					<!-- 세션아이디랑 다를때는 사이트주소의 아이디와 같은 유저의 데이터들 불러오기-->
 					<ul class="nav nav-tabs">
@@ -89,10 +89,10 @@
 									</div>
 								</c:if>
 							</div>
-							
-							<c:choose>	
+
+							<c:choose>
 								<c:when test="${result eq 'sameUser'}">
-									<!-- 작성자아이디와 세션아이디가 동일할 경우에는 안보이게 -->		
+									<!-- 작성자아이디와 세션아이디가 동일할 경우에는 안보이게 -->
 								</c:when>
 								<c:otherwise>
 									<div id="reviewer">
@@ -106,7 +106,8 @@
 							</div>
 							<div id="reviews-footer">
 								<div class="left">
-									<span id="heart" class="glyphicon glyphicon-heart-empty" aria-hidden="true" onclick="changeClassName()"></span> <span>${vo.likecnt }</span> <span>${vo.reviewDate }</span>
+									<span data-reviewno="${vo.reviewNo }" class="like glyphicon glyphicon-heart-empty" aria-hidden="true"></span>
+									<span>${vo.likecnt }</span> <span>${vo.reviewDate }</span>
 								</div>
 								<div class="right">
 									<div class="dropup">
@@ -115,9 +116,12 @@
 										<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu2">
 											<li role="presentation"><a id="add_pli" role="menuitem" tabindex="-1">플레이리스트에 추가<span id="plus">+</span></a></li>
 											<li role="presentation" class="divider"></li>
-											<li role="presentation"><a id="shr_review" role="menuitem" tabindex="-1">서평 공유하기<span class="glyphicon glyphicon-share" aria-hidden="true"></span></a></li>
+											<li role="presentation"><a id="shr_review" role="menuitem" tabindex="-1">서평 공유하기<span class="glyphicon glyphicon-share"
+													aria-hidden="true"></span></a></li>
 											<li role="presentation" class="divider"></li>
-											<li role="presentation"><a role="menuitem" tabindex="-1" target="_blank" href="${pageContext.request.contextPath}/imgpreview">이미지 저장하기<span class="glyphicon glyphicon-save" aria-hidden="true"></span></a></li>
+											<li role="presentation"><a role="menuitem" tabindex="-1" target="_blank" href="${pageContext.request.contextPath}/imgpreview">이미지
+													저장하기<span class="glyphicon glyphicon-save" aria-hidden="true"></span>
+											</a></li>
 										</ul>
 									</div>
 								</div>
@@ -136,7 +140,7 @@
 									<h3 id="profile-title" class="panel-title">내 서재</h3>
 								</c:when>
 								<c:otherwise>
-									<h3 id="profile-title" class="panel-title">${result}님의 서재</h3>
+									<h3 id="profile-title" class="panel-title">${result}님의서재</h3>
 								</c:otherwise>
 							</c:choose>
 						</div>
@@ -144,15 +148,15 @@
 							<div id="profile">
 								<img id="profile-image" src="${pageContext.request.contextPath}/asset/img/profile.png">
 							</div>
-								<c:choose>
-									<c:when test="${result eq 'sameUser'}">
-										<p id="username">${authUser.nickname}</p>
-									</c:when>
-									<c:otherwise>
-										<p id="username">${result}</p>
-									</c:otherwise>
-								</c:choose>
-								
+							<c:choose>
+								<c:when test="${result eq 'sameUser'}">
+									<p id="username">${authUser.nickname}</p>
+								</c:when>
+								<c:otherwise>
+									<p id="username">${result}</p>
+								</c:otherwise>
+							</c:choose>
+
 							<p id="level">Lv.0</p>
 							<div id="info">
 								<a href="${pageContext.request.contextPath}/user/user_modify">회원정보수정</a> <a>로그아웃</a>
@@ -170,24 +174,101 @@
 		<c:import url="/WEB-INF/views/include/modal.jsp"></c:import>
 	</div>
 </body>
-<script>
-	$('#heart').on(
-			'click',
-			function() {
-				//포함되어있으면 true
-				let isExist = document.getElementById('heart').classList
-						.contains('glyphicon-heart-empty');
 
+<script>
+	
+	//좋아요 버튼을 클릭했을때(이벤트)
+	$(".like").on('click', function(){
+		
+		var $this = $(this);
+		var no = $this.data("reviewno");
+		console.log(no);
+	});		
+	
+	
+	
+	$('.reviews').on('click', '#heart', function() {
+		
+		//포함되어있으면 true
+		let isExist = document.getElemenstByClassName('like').classList
+				.contains('glyphicon-heart-empty');
+
+		//데이터수집
+		var reviewNo = $("#reviewNo").val();
+		
+		//출력(리뷰넘버찍어보기)
+		console.log(reviewNo);
+		
+		var clickReview = {
+			reviewNo : reviewNo
+		};
+		
+		//좋아요
+		if (isExist == true) {
+			console.log("좋아요")
+			
+			let like = document.getElementById('heart');
+			like.classList.replace("glyphicon-heart-empty",
+					"glyphicon-heart");			
+		//좋아요취소인경우
+		} else {
+			console.log("좋아요취소")
+			
+			let like = document.getElementById('heart');
+			like.classList.replace("glyphicon-heart",
+					"glyphicon-heart-empty");
+		}
+		
+		
+		//요청 : json 방식
+		$.ajax({
+			//url로 요청할게!    
+			url : "${pageContext.request.contextPath }/like",
+			type : "post",
+			contentType : "application/json", //보낼때 json으로 보낼게
+			data : clickReview,
+			//주소뒤에 갈 데이터 전송방식, //자바 스크립트 객체를 json형식으로 변경
+			dataType : "json", //json> javascript
+			/*
+			success : function(guestbookVo) {
+				//성공시 처리해야될 코드 작성//
+				console.log(guestbookVo);
+				render(guestbookVo, "up"); //위로 붙일지!
+				
+				//좋아요인경우
 				if (isExist == true) {
+					console.log("좋아요")
+					
 					let like = document.getElementById('heart');
 					like.classList.replace("glyphicon-heart-empty",
 							"glyphicon-heart");
+					
+					//좋아요한 테이블에 데이터추가
+				//좋아요취소인경우
 				} else {
+					console.log("좋아요취소")
+					
 					let like = document.getElementById('heart');
 					like.classList.replace("glyphicon-heart",
 							"glyphicon-heart-empty");
 				}
-			});
+
+				//입력화면 초기화
+				$("#input-uname").val("");
+				$("#input-pass").val("");
+				$("[name='content']").val("");
+				
+				//숫자도 바껴야함
+			},
+			//로그인하지 않은경우(모달창띄워주기)
+			error : function(XHR, status, error) {
+				console.error(status + " : " + error);
+			}*/
+			
+		});
+		
+	});
 </script>
+
 <script src="${pageContext.request.contextPath}/asset/js/more.js"></script>
 </html>

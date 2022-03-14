@@ -94,7 +94,7 @@
 					</div>
 					<!-- 작성자아이디와 세션아이디가 동일할 경우에는 안보이게 -->
 					<div id="reviewer">
-						<a>안도현</a>
+						<a href="${pageContext.request.contextPath}/가짜정우성">가짜정우성</a>
 					</div>
 					<div id="reviews-content">
 						<p>꽃게가 간장 속에 반쯤 몸을 담그고 엎드려 있다 등판에 간장이 울컥울컥 쏟아질 때 꽃게는 뱃속의 알을
@@ -320,6 +320,23 @@
 	</div>
 	<!--wrap-->
 </body>
+<script type="text/javascript">
+$('#heart').on('click', function() {
+	//포함되어있으면 true
+	let isExist = document.getElementById('heart').classList
+			.contains('glyphicon-heart-empty');
+
+	if (isExist == true) {
+		let like = document.getElementById('heart');
+		like.classList.replace("glyphicon-heart-empty",
+				"glyphicon-heart");
+	} else {
+		let like = document.getElementById('heart');
+		like.classList.replace("glyphicon-heart",
+				"glyphicon-heart-empty");
+	}
+});</script>
+
 
 <script src="${pageContext.request.contextPath}/asset/js/more.js"></script>
 

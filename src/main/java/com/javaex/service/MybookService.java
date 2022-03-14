@@ -24,6 +24,20 @@ public class MybookService {
 		return mbList;
 	}
 	
+//	public int likeok(int userNo) {
+//		System.out.println("mybookSevice.likeok()");
+//		
+//		//dao에서 둘이 같은 컬럼이 있으면 카운트가 1
+//		int count = mybookDao.like(userNo);
+//		
+//	}
 	
+	
+//	public MybookVo like(int userNo) {
+//		System.out.println("mybookSevice.like()");
+//		
+//		MybookVo likeVo = mybookDao.like(userNo);
+//		
+//	}
 
 }
